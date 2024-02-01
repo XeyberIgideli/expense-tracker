@@ -4,32 +4,35 @@ import {Login} from "./pages/Auth/Login"
 import {Register} from "./pages/Auth/Register"
 import {ReactNode} from 'react'
 import { RouteObject } from 'react-router-dom';
-interface Routes {
-    path: string,
-    element: ReactNode,
-    children?: Routes[]
+import { Home } from "./pages/Home"
 
-}
 
-const routes:Routes[]  = [
+const routes:RouteObject[]  = [
     {
         path: "/",
-        element: <HomeLayout/>
-    },
-    {
-        path: '/auth',
-        element: <AuthLayout/>,
+        element: <HomeLayout/>,
         children: [
             {
-                path: 'login',
-                element: <Login/>
+                index: true,
+                element: <Home/>
             },
             {
-                path: 'register',
-                element: <Register/>
-            }
+                path: '/auth',
+                element: <AuthLayout/>,
+                children: [
+                    {
+                        path: 'login',
+                        element: <Login/>
+                    },
+                    {
+                        path: 'register',
+                        element: <Register/>
+                    }
+                ]
+            },
         ]
     },
+    
 ] 
 
 export default routes
