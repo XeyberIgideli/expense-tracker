@@ -2,6 +2,9 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import {getFirestore, doc,FieldPath ,setDoc, getDoc,getDocs,arrayUnion, collection, updateDoc} from 'firebase/firestore'
 import { getAuth,signOut, onAuthStateChanged,updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import toast from "react-hot-toast" 
+import userHandle from "../utils/utils";
+import { DocumentReference } from '@google-cloud/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyAowfpG6RgOmwiPHy_38qQxJ5c1Li2dRh0",
@@ -27,39 +30,63 @@ interface RegisterProps {
   username: string,
 }
 
+onAuthStateChanged(auth, async user => {  
+  if(user) {
+    const userData = await getDoc(doc(db, 'users', user.uid))  
+    const accessToken = userData?._firestore._authCredentials.auth.auth.currentUser.stsTokenManager.accessToken
+ 
+    const data = {
+      uid: user.uid,
+      fullName: user.displayName,
+      emailVerified: user.emailVerified,
+      accessToken,
+      ...userData.data()
+    }
+      userHandle(data)
+  } else { 
+    userHandle(false)
+  }
+}) 
+
+const login = async ({email,password}: any) => {
+  try {
+    userHandle(true)
+    await signInWithEmailAndPassword(auth,email,password)  
+    return true
+  } catch (err: any) {
+    toast.error(err.code) 
+  } 
+}
+
 const register = async ({email,password, fullName, username}: RegisterProps) => {
  
   try {
       const user = await getDoc(doc(db, 'usernames', username)) 
-     console.log(user)
+      
       if(user.exists()) {
-        // toast.error(`${username} is already used!`) 
-        console.log("Username is already used!")
+        toast.error(`${username} is already used!`)  
         return
       }
       const response = await createUserWithEmailAndPassword(auth,email,password)   
-      const uid = response.user.uid
+      const uid = response.user.uid 
+      await setDoc(doc(db, 'usernames', username), {
+        userID: uid
+      })
+      await setDoc(doc(db, 'users', uid), { 
+        username,
+        userID: uid,
+        fullName, 
+      })
   
-    //   await setDoc(doc(db, 'usernames', username), {
-    //     userID: uid
-    //   })
-    //   await setDoc(doc(db, 'users', uid), { 
-    //     username,
-    //     userID: uid,
-    //     fullName, 
-    //   })
-  
-    //  if(auth.currentUser) {
-    //   await updateProfile(auth.currentUser, {
-    //     displayName: fullName
-    //   })
-    //  }
-  
-    //   return true
-    } catch (err) {
-    //   toast.error(err.code) 
-        console.log(err)
+     if(auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: fullName
+      })
+     }
+    return true
+    } catch (err: any) {
+      toast.error(err.code)  
     } 
   }
 
-export {register}  
+export {register, login}  

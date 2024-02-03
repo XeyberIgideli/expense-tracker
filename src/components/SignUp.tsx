@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Form, Input, InputNumber } from 'antd'; 
 import { register } from '../config/firebase';
+import { useNavigate } from 'react-router-dom';
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
@@ -24,9 +25,17 @@ export const SignUp: React.FC = () => {
   interface FormValues {
     
   }
+  const navigate = useNavigate()
 
   const onFinish = async (values: any) => {
-     await register(values)
+     try {
+        const response = await register(values) 
+        if(response) {
+          navigate('../login', {state: "registerPage"})
+        }
+     } catch (err) {
+      console.log(err)
+     }
   }
 
   return (

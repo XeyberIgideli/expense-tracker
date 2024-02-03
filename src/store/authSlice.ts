@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit" 
-import { Auth, AuthAction, AuthState } from "../types/auth"
+import { Auth, AuthState } from "../types/auth" 
 
 const initialState: AuthState = {
     data: {} as Auth,
@@ -11,8 +11,26 @@ const auth = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUser: (state:AuthState,action:PayloadAction<AuthAction>) => {
-            // state.data = action.payload 
+        setUser: (state:AuthState,action:PayloadAction<Auth>) => {
+            console.log(action.payload)
+            if(action.payload) {
+                localStorage.setItem('accessToken', JSON.stringify(action.payload.accessToken))
+            } else {
+                localStorage.removeItem('accessToken')
+            }
+            state.data = action.payload 
+        },
+        loginStart: (state: AuthState) => { 
+            state.loading = true;
+            state.error = "";
+        },
+        loginSuccess: (state: AuthState) => { 
+            state.loading = false;
+            state.error = "";
+        },
+        loginError: (state: AuthState, action: PayloadAction<string>) => { 
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 })
