@@ -11,12 +11,11 @@ interface LayoutProps {
 
 export const AuthLayout: React.FC<LayoutProps> = () => {
   const user = useSelector<User>(state => state.auth.data)       
-  const navigate = useNavigate()
-  useEffect(() => {
-    if(user) {
+  const navigate = useNavigate() 
+  if(user) {
       navigate('/')
-    }
-  }, [user])
+      return
+  }
   return (<div>
      <Content style={{ padding: '24px 48px',backgroundColor: 'white', height: "84vh" }}> 
        <Outlet/>

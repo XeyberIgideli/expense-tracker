@@ -26,7 +26,11 @@ const validateMessages = {
 export const Login: React.FC<LoginProps> = () => {
 
   const onFinish = async (values: any) => {
-    await login(values)
+    try {
+      await login(values)
+    } catch(err) {
+
+    }
   }
 
   const location = useLocation().state as {registerPage?: boolean}

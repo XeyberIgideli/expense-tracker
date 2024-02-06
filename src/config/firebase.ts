@@ -3,8 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import {getFirestore, doc,FieldPath ,setDoc, getDoc,getDocs,arrayUnion, collection, updateDoc} from 'firebase/firestore'
 import { getAuth,signOut, onAuthStateChanged,updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import toast from "react-hot-toast" 
-import userHandle from "../utils/utils";
-import { DocumentReference } from '@google-cloud/firestore'
+import userHandle from "../utils/utils"; 
 
 const firebaseConfig = {
   apiKey: "AIzaSyAowfpG6RgOmwiPHy_38qQxJ5c1Li2dRh0",
@@ -50,8 +49,8 @@ onAuthStateChanged(auth, async user => {
 
 const login = async ({email,password}: any) => {
   try {
-    userHandle(true)
     await signInWithEmailAndPassword(auth,email,password)  
+    userHandle(true)
     return true
   } catch (err: any) {
     toast.error(err.code) 
@@ -89,4 +88,7 @@ const register = async ({email,password, fullName, username}: RegisterProps) => 
     } 
   }
 
-export {register, login}  
+  async function logout () {
+    await signOut(auth)
+  }
+export {register, login, logout}  

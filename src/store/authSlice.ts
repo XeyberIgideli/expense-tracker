@@ -11,8 +11,7 @@ const auth = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUser: (state:AuthState,action:PayloadAction<Auth>) => {
-            console.log(action.payload)
+        setUser: (state:AuthState,action:PayloadAction<Auth>) => { 
             if(action.payload) {
                 localStorage.setItem('accessToken', JSON.stringify(action.payload.accessToken))
             } else {
